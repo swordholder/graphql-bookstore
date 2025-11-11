@@ -1,4 +1,7 @@
-﻿namespace BookStore.API.Schemas.Mutations
+﻿using BookStore.API.Schemas.Subscriptions;
+using HotChocolate.Subscriptions;
+
+namespace BookStore.API.Schemas.Mutations
 {
     public class Mutation
     {
@@ -9,7 +12,7 @@
            _books = new List<Book>();
         }
 
-        public Book CreateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author)
+        public async Task<Book> CreateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author, [Service]ITopicEventSender topicEventSender)
         {
             var book = new Book
             {
@@ -22,7 +25,7 @@
             };
 
             _books.Add(book);
-
+            await topicEventSender.SendAsync(nameof(Subscription.OnBookAdded), book);
             return book;
         }
 

@@ -1,5 +1,6 @@
 using BookStore.API.Schemas.Mutations;
 using BookStore.API.Schemas.Queries;
+using BookStore.API.Schemas.Subscriptions;
 
 namespace BookStore.API
 {
@@ -13,7 +14,9 @@ namespace BookStore.API
             builder.Services
                 .AddGraphQLServer()
                 .AddQueryType<Query>()
-                .AddMutationType<Mutation>();
+                .AddMutationType<Mutation>()
+                .AddSubscriptionType<Subscription>()
+                .AddInMemorySubscriptions();            
 
             var app = builder.Build();
 
@@ -21,7 +24,7 @@ namespace BookStore.API
             app.MapGet("/", () => Results.Redirect("/graphql", permanent: false));
             app.MapGraphQL();
 
-            
+            app.UseWebSockets();
             app.Run();
         }
     }
