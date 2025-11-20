@@ -25,11 +25,19 @@ namespace BookStore.API.Schemas.Mutations
             };
 
             _books.Add(book);
+
+            //Attribute based subscription
             await topicEventSender.SendAsync(nameof(Subscription.OnBookAdded), book);
             return book;
         }
 
-        public Book UpdateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author)
+        public async Task<Book> UpdateBook(int id, 
+            string title, 
+            Genre genre, 
+            int publishedYear, 
+            decimal price, 
+            Author author, 
+            [Service] ITopicEventSender topicEventSender)
         {
             var book = _books.FirstOrDefault(b => b.Id == id);
             if (book == null)
@@ -42,8 +50,12 @@ namespace BookStore.API.Schemas.Mutations
             book.PublishedYear = publishedYear;
             book.Price = price;
             book.Author = author;
+
+            //Dynamic topic based subscription
+            await topicEventSender.SendAsync(nameof(Subscription.OnBookUpdated), book);
+            Console.WriteLine("📢 Publishing BookUpdated event");
             return book;
-        }
+        }        
 
         public bool DeleteBook(int id)
         {
