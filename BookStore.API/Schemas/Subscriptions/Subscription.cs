@@ -1,5 +1,7 @@
 ﻿using HotChocolate.Execution;
 using HotChocolate.Subscriptions;
+using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace BookStore.API.Schemas.Subscriptions
 {
@@ -9,20 +11,38 @@ namespace BookStore.API.Schemas.Subscriptions
         [Subscribe]
         public Book OnBookAdded([EventMessage]Book book)
         {
-            return book; 
+            return book;
         }
 
         //Dynamic topic name based subscription
+        //[Subscribe(MessageType = typeof(Book))]
+        //public async ValueTask<ISourceStream<Book>> OnBookUpdated(
+        //[Service] ITopicEventReceiver receiver,
+        //CancellationToken cancellationToken)
+        //{
+        //    var sourceStream =  await receiver.SubscribeAsync<Book>(nameof(OnBookUpdated), cancellationToken);
+
+        //    Console.WriteLine($"📚 Subscription triggered: {sourceStream}");
+
+        //    return sourceStream;
+        //}
+
         [Subscribe(MessageType = typeof(Book))]
-        public async ValueTask<ISourceStream<Book>> OnBookUpdated(
-        [Service] ITopicEventReceiver receiver,
-        CancellationToken cancellationToken)
+        public async IAsyncEnumerable<Book> OnBookUpdated(
+            [Service] ITopicEventReceiver receiver,
+            [EnumeratorCancellation] CancellationToken cancellationToken)
         {
-            var sourceStream =  await receiver.SubscribeAsync<Book>(nameof(OnBookUpdated), cancellationToken);
+            var sourceStream = await receiver.SubscribeAsync<Book>(nameof(OnBookUpdated), cancellationToken);
 
-            Console.WriteLine($"📚 Subscription triggered: {sourceStream}");
+            if (sourceStream is null)
+            {
+                yield break;
+            }
 
-            return sourceStream;
+            await foreach (var book in sourceStream.ReadEventsAsync().WithCancellation(cancellationToken))
+            {
+                yield return book;
+            }
         }
     }
 }

@@ -23,6 +23,7 @@ namespace BookStore.API
             builder.Logging.AddConsole();
 
             var app = builder.Build();
+            app.UseRouting();
             app.UseWebSockets();
 
             // Redirect root to the GraphQL endpoint UI and map GraphQL endpoint
