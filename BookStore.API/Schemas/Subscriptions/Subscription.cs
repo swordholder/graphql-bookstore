@@ -14,19 +14,6 @@ namespace BookStore.API.Schemas.Subscriptions
             return book;
         }
 
-        //Dynamic topic name based subscription
-        //[Subscribe(MessageType = typeof(Book))]
-        //public async ValueTask<ISourceStream<Book>> OnBookUpdated(
-        //[Service] ITopicEventReceiver receiver,
-        //CancellationToken cancellationToken)
-        //{
-        //    var sourceStream =  await receiver.SubscribeAsync<Book>(nameof(OnBookUpdated), cancellationToken);
-
-        //    Console.WriteLine($"📚 Subscription triggered: {sourceStream}");
-
-        //    return sourceStream;
-        //}
-
         [Subscribe(MessageType = typeof(Book))]
         public async IAsyncEnumerable<Book> OnBookUpdated(
             [Service] ITopicEventReceiver receiver,

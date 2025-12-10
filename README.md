@@ -150,8 +150,8 @@ subscription
 
 ### Subsribe to book update
 ```graphql
-subscription onBookUpdated() {
-  onBookUpdated() {
+subscription OnBookUpdated {
+  onBookUpdated {
     id
     title
     publishedYear
@@ -160,6 +160,7 @@ subscription onBookUpdated() {
     author {
       id
       name
+      bio
     }
   }
 }
