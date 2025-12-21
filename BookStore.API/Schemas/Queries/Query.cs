@@ -1,4 +1,6 @@
 ﻿
+using BookStore.API.Models;
+
 namespace BookStore.API.Schemas.Queries
 {
     public class Query

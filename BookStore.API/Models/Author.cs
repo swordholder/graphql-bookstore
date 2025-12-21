@@ -1,4 +1,4 @@
-﻿namespace BookStore.API.Schemas
+﻿namespace BookStore.API.Models
 {
     public class Author
     {

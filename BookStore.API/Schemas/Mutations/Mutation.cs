@@ -1,4 +1,5 @@
-﻿using BookStore.API.Schemas.Subscriptions;
+﻿using BookStore.API.Models;
+using BookStore.API.Schemas.Subscriptions;
 using HotChocolate.Subscriptions;
 
 namespace BookStore.API.Schemas.Mutations

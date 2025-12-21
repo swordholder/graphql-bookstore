@@ -1,7 +1,6 @@
-﻿using HotChocolate.Execution;
+﻿using BookStore.API.Models;
 using HotChocolate.Subscriptions;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace BookStore.API.Schemas.Subscriptions
 {
