@@ -1,4 +1,7 @@
-﻿using BookStore.API.Models;
+﻿using BookStore.API.DTOs;
+using BookStore.API.Mappers;
+using BookStore.API.Models;
+using BookStore.API.Repositories;
 using BookStore.API.Schemas.Subscriptions;
 using HotChocolate.Subscriptions;
 
@@ -6,11 +9,13 @@ namespace BookStore.API.Schemas.Mutations
 {
     public class Mutation
     {
-        private readonly List<Book> _books;
+        private readonly BookRepository _booksRepo;
+        private readonly BookMapper _bookMapper;
 
-        public Mutation()
+        public Mutation(BookRepository bookRepository)
         {
-           _books = new List<Book>();
+            _booksRepo = bookRepository;
+            _bookMapper = new BookMapper();
         }
 
         public async Task<Book> CreateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author, [Service]ITopicEventSender topicEventSender)
@@ -25,14 +30,14 @@ namespace BookStore.API.Schemas.Mutations
                 Author = author
             };
 
-            _books.Add(book);
+            await _booksRepo.AddBookAsync(_bookMapper.ToDto(book));
 
             //Attribute based subscription
             await topicEventSender.SendAsync(nameof(Subscription.OnBookAdded), book);
             return book;
         }
 
-        public async Task<Book> UpdateBook(int id, 
+        public async Task<BookDto> UpdateBook(int id, 
             string title, 
             Genre genre, 
             int publishedYear, 
@@ -40,7 +45,8 @@ namespace BookStore.API.Schemas.Mutations
             Author author, 
             [Service] ITopicEventSender topicEventSender)
         {
-            var book = _books.FirstOrDefault(b => b.Id == id);
+            var book = await _booksRepo.GetBookByIdAsync(id);
+
             if (book == null)
             {
                 throw new Exception("Book not found");
@@ -50,7 +56,13 @@ namespace BookStore.API.Schemas.Mutations
             book.Genre = genre;
             book.PublishedYear = publishedYear;
             book.Price = price;
-            book.Author = author;
+
+            if (author != null)
+            { 
+                book.Author = _bookMapper.ToDtoAuthor(author); 
+            }
+
+            await _booksRepo.UpdateBookAsync(book);
 
             //Dynamic topic based subscription
             await topicEventSender.SendAsync(nameof(Subscription.OnBookUpdated), book);
@@ -58,14 +70,16 @@ namespace BookStore.API.Schemas.Mutations
             return book;
         }        
 
-        public bool DeleteBook(int id)
+        public async Task<bool> DeleteBook(int id)
         {
-            var book = _books.FirstOrDefault(b => b.Id == id);
+            var book = await _booksRepo.GetBookByIdAsync(id);
+
             if (book == null)
             {
-                throw new Exception("Book not found");
-            }
-            return _books.Remove(book);
+                return false;
+            }           
+
+            return await _booksRepo.DeleteBookAsync(book.Id);
         }
     }
 }

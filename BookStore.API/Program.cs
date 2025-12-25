@@ -1,4 +1,6 @@
+using BookStore.API.Mappers;
 using BookStore.API.Models;
+using BookStore.API.Repositories;
 using BookStore.API.Schemas.Mutations;
 using BookStore.API.Schemas.Queries;
 using BookStore.API.Schemas.Subscriptions;
@@ -30,6 +32,8 @@ namespace BookStore.API
                 options.UseSqlite(builder.Configuration.GetConnectionString("BookStoreDb"));
             });
 
+            builder.Services.AddScoped<BookRepository>();
+
             var app = builder.Build();
 
             // Automatically apply EF migrations on startup
@@ -49,7 +53,7 @@ namespace BookStore.API
                     logger.LogError(ex, "An error occurred while applying database migrations.");
                     throw;
                 }
-            }
+            }                  
 
             app.UseRouting();
             app.UseWebSockets();

@@ -1,17 +1,18 @@
 # GraphQL BookStore (BookStore.API)
 
-Lightweight GraphQL API for managing books and authors built with .NET 9 and C# 13.
+Lightweight GraphQL API for managing books and authors built with .NET 10 and C# 13.
 
 ## Features
 - GraphQL schema with Queries, Mutations, and Subscriptions
-- In-memory data model for Books and Authors (easy to replace with EF Core or another DB)
+- Data model with Entity Framework Core
 - Example types: `Book`, `Author`, and `Genre` enum
 - Ready to run via `dotnet` CLI or Visual Studio 2022
 
 ## Prerequisites
-- .NET 9 SDK
-- Visual Studio 2022 (updated) or any editor that supports .NET 9
+- .NET 10 SDK
+- Visual Studio 2022 (updated) or any editor that supports .NET 10
 - Git
+- Entity Framework Core
 
 ## Get started (CLI)
 1. Clone the repository
@@ -22,6 +23,21 @@ Lightweight GraphQL API for managing books and authors built with .NET 9 and C# 
    ```
 4. Open your browser and go to `http://localhost:5197/graphql` to access the GraphQL Playground.
 
+## Entity framework Core Integration
+Generate the initial migration:
+```bash
+dotnet ef database update --project BookStore.API --startup-project BookStore.API
+```
+
+If you update the data model, create a new migration:
+
+```bash
+#create new migration
+dotnet ef migrations add UpdatedBook --project BookStore.API --startup-project BookStore.API -o Migrations
+
+#commit changes to DB
+dotnet ef database update --project BookStore.API --startup-project BookStore.API
+```
 
 ## Query samples
 

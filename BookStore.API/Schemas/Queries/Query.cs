@@ -1,69 +1,38 @@
-﻿
+﻿using BookStore.API.Mappers;
 using BookStore.API.Models;
+using BookStore.API.Repositories;
 
 namespace BookStore.API.Schemas.Queries
 {
     public class Query
     {
-        // Exposes a GraphQL field named "books"
-        [GraphQLName("books")]
-        public List<Book> GetBooks()
+        private readonly BookRepository _booksRepo;
+        private readonly BookMapper _bookMapper;
+
+        public Query(BookRepository bookRepository)
         {
-            return GenerateBooks();
-        }
+            _booksRepo = bookRepository;
+            _bookMapper = new BookMapper();
+        }        
 
         // Exposes a GraphQL field named "book" that takes an `id` argument
         [GraphQLName("book")]
         public async Task<Book?> GetBook(int id)
         {
-            var books = GenerateBooks();
-            await Task.Delay(500); // simulate async work
-            var book = books.FirstOrDefault(b => b.Id == id);
+            var book = await _booksRepo.GetBookByIdAsync(id);
 
-            return book;
+            if(book!=null)
+                return _bookMapper.ToModel(book);
+
+            return null;
         }
 
-        private List<Book> GenerateBooks()
+        // Exposes a GraphQL field named "books" that returns a list of all books
+        [GraphQLName("books")]
+        public async Task<List<Book>> GetBooks()
         {
-            return new List<Book>
-            {
-                new Book
-                {
-                    Id = 1,
-                    Title = "The Great Gatsby",
-                    Author = new Author { Id = 1, Name = "F. Scott Fitzgerald", Bio = "American novelist and short story writer." },
-                    Genre = Genre.Fiction,
-                    PublishedYear = 1925,
-                    Price = 10.99m
-                },
-                new Book
-                {
-                    Id = 2,
-                    Title = "1984",
-                    Author = new Author { Id = 2, Name = "George Orwell", Bio = "English novelist and essayist." },
-                    Genre = Genre.ScienceFiction,
-                    PublishedYear = 1949,
-                    Price = 8.99m
-                },
-                new Book
-                {
-                    Id = 3,
-                    Title = "To Kill a Mockingbird",
-                    Author = new Author { Id = 3, Name = "Harper Lee", Bio = "American novelist widely known for To Kill a Mockingbird." },
-                    Genre = Genre.Fiction,
-                    PublishedYear = 1960,
-                    Price = 12.99m
-                },
-                new Book
-                {
-                    Id = 4,
-                    Title = "War and Piece",
-                    Author = new Author { Id = 4, Name = "Leo Tolstoy", Bio = "One of the novelists of 19th century" },
-                    Genre = Genre.Fiction,
-                    PublishedYear = 1890,
-                    Price = 13.99m
-                },
-            };
+            var books = await _booksRepo.GetAllBooksAsync();
+            return books.Select(b => _bookMapper.ToModel(b)).ToList();
         }
     }
 }
