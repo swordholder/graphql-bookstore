@@ -33,6 +33,8 @@ namespace BookStore.API
             });
 
             builder.Services.AddScoped<BookRepository>();
+            builder.Services.AddScoped<AuthorRepository>();
+            builder.Services.AddScoped<BookMapper>();
 
             var app = builder.Build();
 

@@ -9,10 +9,10 @@ namespace BookStore.API.Schemas.Queries
         private readonly BookRepository _booksRepo;
         private readonly BookMapper _bookMapper;
 
-        public Query(BookRepository bookRepository)
+        public Query(BookRepository bookRepository, BookMapper bookMapper)
         {
             _booksRepo = bookRepository;
-            _bookMapper = new BookMapper();
+            _bookMapper = bookMapper;
         }        
 
         // Exposes a GraphQL field named "book" that takes an `id` argument

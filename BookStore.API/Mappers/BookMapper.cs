@@ -1,11 +1,19 @@
 ﻿using BookStore.API.DTOs;
 using BookStore.API.Models;
+using BookStore.API.Repositories;
 
 namespace BookStore.API.Mappers
 {
     public class BookMapper
     {
-        public BookDto ToDto(Book book) 
+        private readonly AuthorRepository _authorRepository;
+
+        public BookMapper(AuthorRepository authorRepository) 
+        {
+            _authorRepository = authorRepository;
+        }
+
+        public async Task<BookDto> ToDto(Book book) 
         {
            var bookDto = new BookDto
             {
@@ -14,9 +22,9 @@ namespace BookStore.API.Mappers
                 Genre = book.Genre,
                 PublishedYear = book.PublishedYear,
                 Price = book.Price                
-            };
+            };            
 
-            if(book.Author != null)         
+            if (book.Author != null)         
             {
                 bookDto.Author = new AuthorDto
                 {
@@ -31,7 +39,7 @@ namespace BookStore.API.Mappers
 
         public Book ToModel(BookDto bookDto) 
         {
-            var book = new Book
+            var book = new Book(_authorRepository)
             {
                 Id = bookDto.Id,
                 Title = bookDto.Title,

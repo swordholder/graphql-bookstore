@@ -16,13 +16,13 @@ namespace BookStore.API.Repositories
         public async Task<List<BookDto>> GetAllBooksAsync()
         {
             await using var context = _contextFactory.CreateDbContext();
-            return await context.Books.Include(b => b.Author).ToListAsync();
+            return await context.Books.ToListAsync();
         }
 
         public async Task<BookDto?> GetBookByIdAsync(int id)
         {
             await using var context = _contextFactory.CreateDbContext();
-            return await context.Books.Include(b => b.Author).FirstOrDefaultAsync(b => b.Id == id);
+            return await context.Books.FirstOrDefaultAsync(b => b.Id == id);
         }
 
         public async Task<BookDto> AddBookAsync(BookDto book)

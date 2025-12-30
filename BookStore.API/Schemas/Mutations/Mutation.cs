@@ -11,16 +11,18 @@ namespace BookStore.API.Schemas.Mutations
     {
         private readonly BookRepository _booksRepo;
         private readonly BookMapper _bookMapper;
+        private readonly AuthorRepository _authorRepository;
 
-        public Mutation(BookRepository bookRepository)
+        public Mutation(BookRepository bookRepository, BookMapper bookMapper, AuthorRepository authorRepository)
         {
             _booksRepo = bookRepository;
-            _bookMapper = new BookMapper();
+            _bookMapper = bookMapper;
+            _authorRepository = authorRepository;
         }
 
         public async Task<Book> CreateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author, [Service]ITopicEventSender topicEventSender)
         {
-            var book = new Book
+            var book = new Book(_authorRepository)
             {
                 Id = id,
                 Title = title,
@@ -30,7 +32,9 @@ namespace BookStore.API.Schemas.Mutations
                 Author = author
             };
 
-            await _booksRepo.AddBookAsync(_bookMapper.ToDto(book));
+            var bookDto = await _bookMapper.ToDto(book);
+
+            await _booksRepo.AddBookAsync(bookDto);
 
             //Attribute based subscription
             await topicEventSender.SendAsync(nameof(Subscription.OnBookAdded), book);
