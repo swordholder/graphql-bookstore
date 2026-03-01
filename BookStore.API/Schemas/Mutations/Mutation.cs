@@ -1,4 +1,5 @@
-﻿using BookStore.API.DTOs;
+﻿using BookStore.API.DataLoaders;
+using BookStore.API.DTOs;
 using BookStore.API.Mappers;
 using BookStore.API.Models;
 using BookStore.API.Repositories;
@@ -11,24 +12,24 @@ namespace BookStore.API.Schemas.Mutations
     {
         private readonly BookRepository _booksRepo;
         private readonly BookMapper _bookMapper;
-        private readonly AuthorRepository _authorRepository;
+        private readonly AuthorDataLoader _authorDataLoader;
 
-        public Mutation(BookRepository bookRepository, BookMapper bookMapper, AuthorRepository authorRepository)
+        public Mutation(BookRepository bookRepository, BookMapper bookMapper, AuthorDataLoader authorDataLoader)
         {
             _booksRepo = bookRepository;
             _bookMapper = bookMapper;
-            _authorRepository = authorRepository;
+            _authorDataLoader = authorDataLoader;
         }
 
         public async Task<Book> CreateBook(int id, string title, Genre genre, int publishedYear, decimal price, Author author, [Service]ITopicEventSender topicEventSender)
         {
-            var book = new Book(_authorRepository)
+            var book = new Book(_authorDataLoader)
             {
                 Id = id,
                 Title = title,
                 Genre = genre,
                 PublishedYear = publishedYear,                
-                Price = price,
+                Price = price,               
                 Author = author
             };
 

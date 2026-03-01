@@ -24,5 +24,10 @@ namespace BookStore.API.Mappers
                 Bio = author.Bio
             };
         }
+
+        internal IReadOnlyDictionary<int, Author> ToDomain(IEnumerable<AuthorDto> enumerable)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

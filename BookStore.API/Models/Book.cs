@@ -1,31 +1,19 @@
-﻿using BookStore.API.Mappers;
-using BookStore.API.Repositories;
+﻿using BookStore.API.DataLoaders;
+using BookStore.API.Mappers;
 
 namespace BookStore.API.Models
 {
     public class Book
     {
         private readonly AuthorMapper _authorMapper = new AuthorMapper();
-        private readonly AuthorRepository _authorRepository;
-
-        public Book(AuthorRepository authorRepository)
-        {
-            _authorRepository = authorRepository;
-        }
 
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
 
-        [GraphQLNonNullType]
-        public Author Author
-        {
-            get { return FetchAuthor(_authorRepository).Result;}
-            set;
-        }
-        
-        private async Task<Author> FetchAuthor(AuthorRepository authorRepository)
+        [GraphQLNonNullType]        
+        public async Task<Author> Author([Service]AuthorDataLoader authorDataLoader)
         {          
-            var authorDto = await authorRepository.GetAuthorByIdAsync(this.Id);
+            var authorDto = await authorDataLoader.LoadAsync(Id, CancellationToken.None);
 
             return _authorMapper.ToDomain(authorDto);            
         }

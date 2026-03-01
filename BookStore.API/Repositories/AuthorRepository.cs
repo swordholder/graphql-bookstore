@@ -19,6 +19,12 @@ namespace BookStore.API.Repositories
             return await context.Authors.FirstOrDefaultAsync(a => a.Id == id);
         }
 
+        public async Task<IEnumerable<AuthorDto>> GetManyAuthorsByIds(IReadOnlyList<int> ids) 
+        {
+            await using var context = _contextFactory.CreateDbContext();
+            return await context.Authors.Where(a => ids.Contains(a.Id)).ToListAsync();  
+        }
+
         public async Task<AuthorDto> AddAuthorAsync(AuthorDto author)
         {
             await using var context = _contextFactory.CreateDbContext();

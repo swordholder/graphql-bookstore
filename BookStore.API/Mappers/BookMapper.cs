@@ -1,16 +1,16 @@
-﻿using BookStore.API.DTOs;
+﻿using BookStore.API.DataLoaders;
+using BookStore.API.DTOs;
 using BookStore.API.Models;
-using BookStore.API.Repositories;
 
 namespace BookStore.API.Mappers
 {
     public class BookMapper
     {
-        private readonly AuthorRepository _authorRepository;
+        private readonly AuthorDataLoader _authorDataLoader;
 
-        public BookMapper(AuthorRepository authorRepository) 
+        public BookMapper(AuthorDataLoader authorDataLoader) 
         {
-            _authorRepository = authorRepository;
+            _authorDataLoader = authorDataLoader;
         }
 
         public async Task<BookDto> ToDto(Book book) 
@@ -39,7 +39,7 @@ namespace BookStore.API.Mappers
 
         public Book ToModel(BookDto bookDto) 
         {
-            var book = new Book(_authorRepository)
+            var book = new Book(_authorDataLoader)
             {
                 Id = bookDto.Id,
                 Title = bookDto.Title,

@@ -1,3 +1,4 @@
+using BookStore.API.DataLoaders;
 using BookStore.API.Mappers;
 using BookStore.API.Models;
 using BookStore.API.Repositories;
@@ -34,7 +35,8 @@ namespace BookStore.API
 
             builder.Services.AddScoped<BookRepository>();
             builder.Services.AddScoped<AuthorRepository>();
-            builder.Services.AddScoped<BookMapper>();
+            builder.Services.AddScoped<BookMapper>();                        
+            builder.Services.AddScoped<AuthorDataLoader>();
 
             var app = builder.Build();
 
